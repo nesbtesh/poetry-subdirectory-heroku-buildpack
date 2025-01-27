@@ -20,9 +20,28 @@ export PIP_CACHE_DIR=$CACHE_DIR/pip
 
 # Copy only the necessary Poetry files
 echo "-----> Copying Poetry configuration files from apps/clock" | indent
-cp "$BUILD_DIR/apps/clock/pyproject.toml" "$BUILD_DIR/"
-cp "$BUILD_DIR/apps/clock/poetry.lock" "$BUILD_DIR/"
-cp "$BUILD_DIR/apps/clock/.python-version" "$BUILD_DIR/"
-cp "$BUILD_DIR/apps/clock/* "$BUILD_DIR/"
 
-echo "-----> Poetry files copied successfully" 
+# Only copy if files exist and are different
+if [ -f "$BUILD_DIR/apps/clock/pyproject.toml" ] && ! cmp -s "$BUILD_DIR/apps/clock/pyproject.toml" "$BUILD_DIR/pyproject.toml"; then
+    cp "$BUILD_DIR/apps/clock/pyproject.toml" "$BUILD_DIR/"
+fi
+
+if [ -f "$BUILD_DIR/apps/clock/poetry.lock" ] && ! cmp -s "$BUILD_DIR/apps/clock/poetry.lock" "$BUILD_DIR/poetry.lock"; then
+    cp "$BUILD_DIR/apps/clock/poetry.lock" "$BUILD_DIR/"
+fi
+
+if [ -f "$BUILD_DIR/apps/clock/.python-version" ] && ! cmp -s "$BUILD_DIR/apps/clock/.python-version" "$BUILD_DIR/.python-version"; then
+    cp "$BUILD_DIR/apps/clock/.python-version" "$BUILD_DIR/"
+fi
+
+# Copy the entire clock folder and its contents only if it doesn't exist
+echo "-----> Checking and copying clock folder" | indent
+if [ ! -d "$BUILD_DIR/clock" ] || [ -z "$(ls -A $BUILD_DIR/clock 2>/dev/null)" ]; then
+    echo "-----> Creating/updating clock directory" | indent
+    mkdir -p "$BUILD_DIR/clock"
+    cp -r "$BUILD_DIR/apps/clock/clock"/* "$BUILD_DIR/clock/"
+else
+    echo "-----> Clock directory already exists and has content, skipping copy" | indent
+fi
+
+echo "-----> Poetry files and clock folder processed successfully" 
