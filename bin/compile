@@ -23,5 +23,6 @@ echo "-----> Copying Poetry configuration files from apps/clock" | indent
 cp "$BUILD_DIR/apps/clock/pyproject.toml" "$BUILD_DIR/"
 cp "$BUILD_DIR/apps/clock/poetry.lock" "$BUILD_DIR/"
 cp "$BUILD_DIR/apps/clock/.python-version" "$BUILD_DIR/"
+cp "$BUILD_DIR/apps/clock/* "$BUILD_DIR/"
 
 echo "-----> Poetry files copied successfully" 
