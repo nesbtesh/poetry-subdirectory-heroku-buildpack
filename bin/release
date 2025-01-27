@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cat << EOF
+---
+default_process_types:
+  clock: python apps/clock/clock/app.py --port 8080
+EOF 

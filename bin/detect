@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Check if apps/clock directory and pyproject.toml exist
+if [ -d "$1/apps/clock" ] && [ -f "$1/apps/clock/pyproject.toml" ]; then
+  # Create a symlink to the poetry files in the root
+  ln -sf "$1/apps/clock/pyproject.toml" "$1/pyproject.toml"
+  if [ -f "$1/apps/clock/poetry.lock" ]; then
+    ln -sf "$1/apps/clock/poetry.lock" "$1/poetry.lock"
+  fi
+  echo "Python Clock Poetry Requirements"
+  exit 0
+else
+  exit 1
+fi 

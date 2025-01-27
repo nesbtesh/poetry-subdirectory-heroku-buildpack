@@ -1,0 +1,50 @@
+#!/bin/sh
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+echo "-----> Installing Python Clock Poetry Requirements"
+
+# Create cache directories if they don't exist
+mkdir -p $CACHE_DIR/poetry
+mkdir -p $CACHE_DIR/pip
+
+# Export cache directories to environment
+export POETRY_CACHE_DIR=$CACHE_DIR/poetry
+export PIP_CACHE_DIR=$CACHE_DIR/pip
+
+# Install Poetry if not available
+if ! command -v poetry &> /dev/null; then
+    echo "-----> Installing Poetry" | indent
+    curl -sSL https://install.python-poetry.org | python3 - 2>&1 | indent
+    export PATH="/root/.local/bin:$PATH"
+fi
+
+# Configure Poetry
+poetry config virtualenvs.create false 2>&1 | indent
+poetry config experimental.new-installer false 2>&1 | indent
+
+# Copy the actual source files to a temporary directory
+echo "-----> Preparing source files" | indent
+mkdir -p "$BUILD_DIR/tmp_build"
+cp -r "$BUILD_DIR/apps/clock"/* "$BUILD_DIR/tmp_build/"
+
+cd "$BUILD_DIR/tmp_build"
+
+echo "-----> Installing dependencies using Poetry" | indent
+poetry install --no-dev --no-interaction --no-ansi 2>&1 | indent
+
+# Copy the installed packages back to the main directory
+echo "-----> Copying installed packages" | indent
+cp -r .venv/* "$BUILD_DIR/"
+
+# Clean up
+rm -rf "$BUILD_DIR/tmp_build"
+rm -f "$BUILD_DIR/pyproject.toml" "$BUILD_DIR/poetry.lock"
+
+echo "-----> Poetry installation completed" 
