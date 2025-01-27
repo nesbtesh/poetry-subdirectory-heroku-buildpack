@@ -7,7 +7,7 @@ This buildpack installs Python requirements using Poetry for the clock process i
 Add this buildpack to your Heroku application:
 
 ```
-heroku buildpacks:add https://github.com/heroku/python-clock-poetry-requirements-buildpack.git
+heroku buildpacks:add https://github.com/nesbtesh/poetry-subdirectory-heroku-buildpack.git
 ```
 
 Make sure you have a `pyproject.toml` file in your `apps/clock` directory.
